@@ -25,13 +25,13 @@ import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
+import DataTable from "examples/Tables/OrderDataTable";
 
 // Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
+import authorsTableData from "layouts/orders/data/authorsTableData";
+import projectsTableData from "layouts/orders/data/projectsTableData";
 
-function Tables() {
+function Orders() {
   const { columns, rows } = authorsTableData();
   const { columns: pColumns, rows: pRows } = projectsTableData();
 
@@ -54,7 +54,7 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                 Categories
+            Orders
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
@@ -81,7 +81,7 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                Products
+         Manufacturer
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
@@ -103,4 +103,4 @@ function Tables() {
   );
 }
 
-export default Tables;
+export default Orders;

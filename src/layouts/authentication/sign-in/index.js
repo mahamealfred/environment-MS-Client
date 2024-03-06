@@ -12,8 +12,9 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-
-import { useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify"
+import { useContext, useState, useMemo, useRef, useEffect} from "react";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -40,14 +41,87 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "apis/apisCotroller";
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
-
+  const navigate = useNavigate();
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
+  
+  const goToHome = () => {
+    // setShowConfirmDialog(false);
+    navigate("/", { state: "" });
+  };
+
+const handleSubmit = async(e) => {
+  e.preventDefault();
+navigate("/dashboard");
+toast.dismiss();
+    const id = toast.loading("Login...");
+    const accessDetails = {
+      email: email,
+      password: password,
+    };
+    try {
+  
+      const response = await loginUser(accessDetails);
+       
+     
+      setUserData(response);
+
+      if (response.responseCode === "200") {
+        setUser(response);
+        context.updateUser(response);
+        context.updateLoginStatus(true);
+        context.updateUserId(response.userId);
+        context.updateEmail(response.email);
+        context.updateAgentUsername(response.username);
+    
+
+        toast.update(id, {
+          render: response.responseDescription,
+          type: "success",
+          isLoading: false,
+          closeButton: null,
+        });
+
+        setUserDetails(response);
+        goToHome();
+        //setShowConfirmDialog(true);
+      } else {
+        toast.update(id, {
+          render: response.responseDescription,
+          type: "info",
+          isLoading: false,
+          closeButton: null,
+        });
+      }
+      
+    } catch (error) {
+      toast.update(id, {
+        render:
+          "Dear customer we are unable to process your request now. please Try again later.",
+        type: "info",
+        isLoading: false,
+        closeButton: null,
+      });
+
+      if (!error?.response) {
+        //console.log('No Server Response');
+      } else if (error.response?.status === 409) {
+        //console.log('Username Taken');
+      } else {
+        //console.log('Registration Failed')
+      } 
+    } 
+};
   return (
-    <BasicLayout image={bgImage}>
+    <BasicLayout 
+    // image={bgImage}
+    >
       <Card>
         <MDBox
           variant="gradient"
@@ -84,10 +158,10 @@ function Basic() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
+              <MDInput type="email" label="Email" value={email} onChange={(e)=>setEmail(e.target.value)} fullWidth />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
+              <MDInput type="password" label="Password" value={password} onChange={(e)=>setPassword(e.target.value)} fullWidth />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -102,11 +176,11 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
+              <MDButton onClick={handleSubmit} variant="gradient" color="info" fullWidth>
                 sign in
               </MDButton>
             </MDBox>
-            <MDBox mt={3} mb={1} textAlign="center">
+            {/* <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
                 Don&apos;t have an account?{" "}
                 <MDTypography
@@ -120,7 +194,7 @@ function Basic() {
                   Sign up
                 </MDTypography>
               </MDTypography>
-            </MDBox>
+            </MDBox> */}
           </MDBox>
         </MDBox>
       </Card>
